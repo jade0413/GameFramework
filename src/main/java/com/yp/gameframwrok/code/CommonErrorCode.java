@@ -1,6 +1,5 @@
 package com.yp.gameframwrok.code;
 
-// TODO:后续将message的各种errorCode考虑整合进来这里
 public enum CommonErrorCode {
     SUCCESS(0), // 成功
     FAILED(1), // 失败

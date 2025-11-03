@@ -24,12 +24,22 @@ public class MessageManager implements Serializable {
 
     public MessageManager(List<IMessageHandler> handlers) {
         handlerMap = handlers.stream()
-                .collect(Collectors.toMap(
+                .collect(Collectors.groupingBy(
                         handler -> handler.getClass().getAnnotation(GameHandler.class).value(),
-                        handler -> {
-                            GameHandler annotation = handler.getClass().getAnnotation(GameHandler.class);
-                            return Map.of(annotation.action(), handler);
-                        }
+                        Collectors.flatMapping(
+                                handler -> {
+                                    GameHandler annotation = handler.getClass().getAnnotation(GameHandler.class);
+                                    return Map.of(annotation.action(), handler).entrySet().stream();
+                                },
+                                Collectors.toMap(
+                                        Map.Entry::getKey,
+                                        Map.Entry::getValue,
+                                        (existing, replacement) -> {
+                                            // 处理相同EGameAction的冲突
+                                            return replacement; // 或用 existing
+                                        }
+                                )
+                        )
                 ));
     }
 

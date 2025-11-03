@@ -148,6 +148,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         Channel channel = ctx.channel();
         if (frame instanceof TextWebSocketFrame) {
             String request = ((TextWebSocketFrame) frame).text();
+            log.info("收到客户端消息:{}",channel.id().hashCode() + "->" + request);
             MessageEvent messageEvent = new MessageEvent();
             messageEvent.setPlayerId(1);
             messageEvent.setData(ByteString.copyFromUtf8(request));
@@ -167,7 +168,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             }
             TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(request.toUpperCase(Locale.US));
             String text = textWebSocketFrame.text();
-            log.info("收到客户端消息:{}",channel.id().hashCode() + "->" + text);
             long l = System.currentTimeMillis();
             ctx.channel().writeAndFlush(new TextWebSocketFrame(String.valueOf(l)));
         } else if (frame instanceof PingWebSocketFrame) {

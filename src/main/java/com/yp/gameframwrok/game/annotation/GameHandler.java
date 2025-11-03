@@ -17,5 +17,5 @@ public @interface GameHandler {
 
     EGameType value();
 
-     EGameAction action();
+    EGameAction action();
 }
