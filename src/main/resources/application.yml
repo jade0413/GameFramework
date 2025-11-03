@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/your_database?useSSL=false&serverTimezone=UTC
+    username: your_username
+    password: your_password
+    driver-class-name: org.postgresql.Driver
+  jackson:
+    time-zone: GMT+8
+#  messages:
+#    basename: i18n/messages
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      password:
+      timeout: 5000
+server:
+  port: 8080
+  ssl:
+    enabled: false
+netty:
+  websocket:
+    path: /websocket
+    ssl-enabled: false
+    reader-idle-seconds: 30
+    writer-idle-seconds: 60
+    all-idle-seconds: 120
+    compression-enabled: true
+    compression-threshold: 2048
+mybatis-plus:
+  # 搜索指定包别名
+#  typeAliasesPackage: com.ews.**.domain
+#  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+#  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 加载全局的配置文件
+  #configLocation: classpath:mybatis/mybatis-config.xml
+  # configuration:
+  #   log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  config: classpath:log4j2.yml

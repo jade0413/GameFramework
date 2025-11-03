@@ -1,0 +1,9 @@
+syntax = "proto3";
+package outer.message;
+
+message DataPackage {
+  int32 mainType = 1;
+  int32 subType = 2;
+  bytes data = 3;
+  int32 errorCode = 4;
+}
