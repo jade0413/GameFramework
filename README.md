@@ -1,0 +1,1 @@
+GameFrameWork 是一款以springboot为基础，集成netty作为网络请求，使用disruptor作为异步处理所有请请求，作为基础的游戏服务框架，重连.心跳 会话管理都有基础处理，然后使用protobuf作为传输协议
