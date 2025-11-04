@@ -9,17 +9,11 @@ import com.yp.gameframwrok.server.manager.ISession;
 import com.yp.gameframwrok.server.manager.SocketAcceptor;
 import com.yp.gameframwrok.server.manager.ReconnectTokenManager;
 import com.yp.gameframwrok.server.manager.ISessionManager;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -30,10 +24,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.net.SocketException;
 import java.util.Locale;
 
 /**
@@ -187,7 +178,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
             int mainType = outerMessage.getMainType();
             int subType = outerMessage.getSubType();
             MessageEvent messageEvent = new MessageEvent();
-            messageEvent.setPlayerId(session.getPlayerId());
+            messageEvent.setPlayerId(session.getUserId());
             messageEvent.setData(outerMessage.getData());
             messageEvent.setMainType(mainType);
             messageEvent.setSubType(subType);
@@ -211,8 +202,42 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("WebSocket 异常: {}", cause.getMessage(), cause);
-        ctx.close();
+        if (isConnectionReset(cause)) {
+            // Connection reset 是正常现象，记录为 INFO 级别
+            log.info("客户端连接重置: {} ",
+                    ctx.channel().remoteAddress());
+        } else {
+            // 其他异常记录为 ERROR 级别
+            log.error("WebSocket 异常 : {}",
+                     cause.getMessage());
+        }
+        // 优雅关闭连接
+        closeConnectionGracefully(ctx);
+    }
+
+    /**
+     * 判断是否为连接重置异常
+     */
+    private boolean isConnectionReset(Throwable cause) {
+        return cause instanceof SocketException &&  ("Connection reset".equals(cause.getMessage()) || "Connection reset by peer".equals(cause.getMessage()));
+    }
+
+    /**
+     * 优雅关闭连接
+     */
+    private void closeConnectionGracefully(ChannelHandlerContext ctx) {
+        try {
+            if (ctx.channel().isActive()) {
+                // 发送关闭帧
+                ctx.writeAndFlush(new CloseWebSocketFrame())
+                        .addListener(ChannelFutureListener.CLOSE);
+            } else {
+                ctx.close();
+            }
+        } catch (Exception e) {
+            log.debug("关闭连接时发生异常: {}", e.getMessage());
+            ctx.close();
+        }
     }
 
     

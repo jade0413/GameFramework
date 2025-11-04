@@ -7,4 +7,13 @@ import com.yp.gameframwrok.game.manager.GameModule;
  */
 public class ZjhGameModule extends GameModule<ZjhRoomConfig,ZjhRoom> {
 
+    public void createRoom() {
+        ZjhRoomConfig roomConfig = new ZjhRoomConfig();
+        roomConfig.init();
+    }
+
+    public void joinRoom(int roomId, int userId) {
+
+    }
+
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
  * @author yyp
  */
 public enum EGameType {
-    ZJH(1, "扎金花"),
+    ZJH(1001, "扎金花"),
     DN(1002,"斗牛"),
     ;
 

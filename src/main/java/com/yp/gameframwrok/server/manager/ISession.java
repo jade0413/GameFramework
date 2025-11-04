@@ -20,7 +20,7 @@ public interface ISession {
 
     void resetSession(Channel channel);
 
-    Integer getPlayerId();
+    Integer getUserId();
 
     boolean isVerified();
 }

@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class WebSocketServer implements SmartLifecycle {
 
-	@Value("${server.port}")
+	@Value("${netty.websocket.port}")
 	Integer bindPort;
 
     @Autowired

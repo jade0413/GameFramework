@@ -6,8 +6,8 @@ import lombok.Data;
  * @author yyp
  */
 @Data
-public abstract class BasePlayer {
-    protected int playerId;
+public abstract class GamePlayer {
+    protected int userId;
 
     protected int playerLevel;
     /**
@@ -38,8 +38,8 @@ public abstract class BasePlayer {
 
     protected boolean isRobot;
 
-    public BasePlayer(int playerId,int enterGold) {
-        this.playerId = playerId;
+    public GamePlayer(int playerId, int enterGold) {
+        this.userId = playerId;
         this.enterGold = enterGold;
         this.curGold = enterGold;
         this.flowGold = 0;

@@ -10,7 +10,7 @@ import java.util.List;
  * @author yyp
  */
 @Data
-public abstract class BaseRoom<RC extends BaseRoomConfig,BP extends BasePlayer>  {
+public abstract class BaseRoom<RC extends BaseRoomConfig,BP extends GamePlayer>  {
     protected int roomId;
 
     protected RC roomConfig;
@@ -31,7 +31,8 @@ public abstract class BaseRoom<RC extends BaseRoomConfig,BP extends BasePlayer> 
 
     protected long timeout; // 超时操作时间
 
-    public void init(){
+    public void init(RC roomConfig){
+        this.roomConfig = roomConfig;
         this.curPlayerPosIndex = 0;
     }
 

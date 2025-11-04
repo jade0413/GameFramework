@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class OperationHandler implements IMessageHandler {
 
     @Override
-    public void handle(ByteString data, long playerId) {
+    public void handle(ByteString data, long userId) {
         log.info("ZjhOperationHandler handle data: {}", data);
     }
 }

@@ -138,7 +138,8 @@ public class DefaultSessionManager implements ISessionManager {
     @Override
     public void detachSession(Channel channel) {
         ISession s = localSessionsByConnection.remove(channel);
-        if (s instanceof Session ss) {
+        if (s instanceof Session) {
+            Session ss = (Session) s;
             boolean verified = ss.isVerified();
             // 未验证的连接直接移除
             if(!verified) {
@@ -154,9 +155,10 @@ public class DefaultSessionManager implements ISessionManager {
     @Override
     public ISession resumeSession(int previousSessionId, Channel newChannel) {
         ISession s = localSessionsById.get(previousSessionId);
-        if (!(s instanceof Session ss)) {
+        if (!(s instanceof Session)) {
             return null;
         }
+        Session ss = (Session) s;
         if (!ss.isDetached()) {
             return null;
         }

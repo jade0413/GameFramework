@@ -6,7 +6,7 @@ import lombok.Data;
  * @author yyp
  */
 @Data
-public class BaseRoomConfig {
+public abstract class BaseRoomConfig {
      /**
       * 房间最大人数
       */
@@ -19,5 +19,10 @@ public class BaseRoomConfig {
       * 房间类型
       */
     private int roomType;
+
+     /**
+      * 初始化房间配置
+      */
+    public abstract void init();
 
 }

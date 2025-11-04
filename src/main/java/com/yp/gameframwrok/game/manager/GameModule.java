@@ -58,6 +58,9 @@ public abstract class GameModule<RC extends BaseRoomConfig,BR extends BaseRoom> 
     }
 
 
+    public void initRoom(){
+    }
+
     /**
      * 异步业务逻辑处理， 无阻塞io操作，保证执行顺序，单线程处理
      */

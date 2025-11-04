@@ -1,4 +1,4 @@
-package com.yp.gameframwrok.game.logic.zjh.handler;
+package com.yp.gameframwrok.game.logic.dn.handler;
 
 import com.google.protobuf.ByteString;
 import com.yp.gameframwrok.engine.message.IMessageHandler;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@GameHandler(value = EGameType.ZJH, action = EGameAction.JOIN_ROOM)
-public class JoinHandler implements IMessageHandler {
+@GameHandler(value = EGameType.DN, action = EGameAction.OPERATION)
+public class DnOperationHandler implements IMessageHandler {
 
     @Override
     public void handle(ByteString data, long userId) {
-        log.info("ZjhJoinHandler handle data: {}", data);
+        log.info("ZjhOperationHandler handle data: {}", data);
     }
 }

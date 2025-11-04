@@ -10,7 +10,7 @@ public enum EGameAction {
      /**
       * 操作
       */
-     OPERATION(1, "操作"),
+     OPERATION(1001, "操作"),
      /**
       * 加入房间
       */

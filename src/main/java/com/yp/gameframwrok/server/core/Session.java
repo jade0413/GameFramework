@@ -18,7 +18,7 @@ public class Session implements ISession {
 
     private long aliveTime;
 
-    private Integer playerId;
+    private Integer userId;
 
     private volatile long creationTime;
 
@@ -61,7 +61,7 @@ public class Session implements ISession {
 
 
     public boolean isVerified() {
-        return this.playerId != null && this.playerId > 0;
+        return this.userId != null && this.userId > 0;
     }
 
 
