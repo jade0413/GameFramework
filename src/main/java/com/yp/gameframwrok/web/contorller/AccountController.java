@@ -1,6 +1,8 @@
 package com.yp.gameframwrok.web.contorller;
-
-import com.yp.gameframwrok.web.entity.Account;
+import com.yp.gameframwrok.web.model.Result;
+import com.yp.gameframwrok.web.model.dto.LoginDTO;
+import com.yp.gameframwrok.web.model.dto.RegisterDTO;
+import com.yp.gameframwrok.web.model.vo.LoginResultVO;
 import com.yp.gameframwrok.web.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +16,14 @@ public class AccountController {
 
     @Autowired
     private AccountService userService;
+     @PostMapping("/login")
+     public Result<LoginResultVO> login(@RequestBody LoginDTO loginDTO) {
+         return Result.success(userService.login(loginDTO));
+     }
 
-     @PostMapping("/test")
-     public String test() {
-         userService.save(new Account());
-         return "success";
+     @PostMapping("/register")
+     public Result<Void> register(@RequestBody RegisterDTO registerDTO) {
+         userService.register(registerDTO);
+         return Result.success();
      }
 }

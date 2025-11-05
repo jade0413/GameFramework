@@ -137,6 +137,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws InvalidProtocolBufferException {
         Channel channel = ctx.channel();
+        log.info("收到消息:{}", frame);
         if (frame instanceof TextWebSocketFrame) {
             String request = ((TextWebSocketFrame) frame).text();
             log.info("收到客户端消息:{}",channel.id().hashCode() + "->" + request);

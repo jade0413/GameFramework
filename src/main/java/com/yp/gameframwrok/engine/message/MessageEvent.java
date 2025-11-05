@@ -7,7 +7,7 @@ import lombok.Data;
 public class MessageEvent {
     private ByteString data;
 
-    private long playerId;
+    private int playerId;
 
     private int mainType;
 

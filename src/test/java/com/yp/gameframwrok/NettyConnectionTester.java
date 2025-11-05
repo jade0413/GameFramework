@@ -1,5 +1,6 @@
 package com.yp.gameframwrok;
 
+import com.yp.gameframwrok.model.message.OuterMessage;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -88,6 +89,7 @@ public class NettyConnectionTester {
         long endTime = System.currentTimeMillis();
 //        Thread.sleep(60000);
         executor.shutdown();
+
 
         return new ConnectionTestResult(
                 connectedCount.get(),

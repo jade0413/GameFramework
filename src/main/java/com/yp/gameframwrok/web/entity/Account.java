@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author yyp
  */
@@ -13,4 +15,18 @@ import lombok.Data;
 public class Account {
      @TableId(type = IdType.AUTO)
      private Integer userId;
+
+     private String password;
+
+     private String username;
+
+     private Integer gold;
+
+     private Date createTime;
+
+     private String nickname;
+
+
+     private Integer state;
+
 }
