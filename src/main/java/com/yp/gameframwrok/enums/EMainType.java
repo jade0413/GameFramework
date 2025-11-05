@@ -1,11 +1,13 @@
-package com.yp.gameframwrok.game.enums;
+package com.yp.gameframwrok.enums;
 
 import lombok.Getter;
 
 /**
  * @author yyp
  */
-public enum EGameType {
+public enum EMainType {
+
+    BASE(1000,"基础校验"),
     ZJH(1001, "扎金花"),
     DN(1002,"斗牛"),
     ;
@@ -16,12 +18,12 @@ public enum EGameType {
     @Getter
     private final String name;
 
-    EGameType(int code, String name) {
+    EMainType(int code, String name) {
         this.code = code;
         this.name = name;
     }
-    public static EGameType valueOf(int code) {
-        for (EGameType gameType : values()) {
+    public static EMainType valueOf(int code) {
+        for (EMainType gameType : values()) {
             if (gameType.getCode() == code) {
                 return gameType;
             }

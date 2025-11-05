@@ -1,11 +1,13 @@
-package com.yp.gameframwrok.game.enums;
+package com.yp.gameframwrok.enums;
 
 import lombok.Getter;
 
 /**
  * @author yyp
  */
-public enum EGameAction {
+public enum ESubType {
+
+    VERIFY(1000,"校验"),
 
      /**
       * 操作
@@ -23,13 +25,13 @@ public enum EGameAction {
      @Getter
      private final String name;
 
-     EGameAction(int code, String name) {
+     ESubType(int code, String name) {
          this.code = code;
          this.name = name;
      }
 
-     public static EGameAction valueOf(int code) {
-        for (EGameAction gameAction : values()) {
+     public static ESubType valueOf(int code) {
+        for (ESubType gameAction : values()) {
             if (gameAction.getCode() == code) {
                 return gameAction;
             }

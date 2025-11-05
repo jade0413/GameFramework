@@ -1,7 +1,7 @@
 package com.yp.gameframwrok.game.annotation;
 
-import com.yp.gameframwrok.game.enums.EGameAction;
-import com.yp.gameframwrok.game.enums.EGameType;
+import com.yp.gameframwrok.enums.ESubType;
+import com.yp.gameframwrok.enums.EMainType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface GameHandler {
 
-    EGameType value();
+    EMainType value();
 
-    EGameAction action();
+    ESubType action();
 }

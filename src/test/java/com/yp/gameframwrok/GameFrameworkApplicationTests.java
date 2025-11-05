@@ -30,14 +30,22 @@ class GameFrameworkApplicationTests {
 
     @Autowired
     private NettyConnectionTester connectionTester;
+
+    @Autowired
+    private WebSocketClientTester webSocketClientTester;
     @Test
     void contextLoads() throws InterruptedException {
         // 测试小规模连接
-        NettyConnectionTester.ConnectionTestResult result =
-                connectionTester.testConnections("127.0.0.1", 8081,
-                        10, 10, 0);
+//        NettyConnectionTester.ConnectionTestResult result =
+//                connectionTester.testConnections("127.0.0.1", 8081,
+//                        10, 10, 0);
 
-        printTestResult("小规模连接测试", result);
+        WebSocketClientTester.TestResult webSocketResult =
+                webSocketClientTester.testConnections("127.0.0.1", 8081, "/websocket",
+                        10, 5, 100);
+//        printTestResult("WebSocket连接测试", webSocketResult);
+        log.info("WebSocket连接测试结果: {}", webSocketResult);
+//        printTestResult("小规模连接测试", result);
 
 //        assertThat(result.getSuccessRate()).isGreaterThan(95);
     }

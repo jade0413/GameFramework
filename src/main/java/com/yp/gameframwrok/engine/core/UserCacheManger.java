@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 /**
  * @author yyp
  */
-@Log4j2
 @Service
+@Log4j2
 public class UserCacheManger {
 
     @Autowired()
@@ -30,6 +30,5 @@ public class UserCacheManger {
      public void removeUser(Integer userId) {
         userCache.invalidate(userId);
     }
-
 
 }

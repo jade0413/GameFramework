@@ -138,8 +138,8 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws InvalidProtocolBufferException {
         Channel channel = ctx.channel();
         log.info("收到消息:{}", frame);
-        if (frame instanceof TextWebSocketFrame) {
-            String request = ((TextWebSocketFrame) frame).text();
+        if (frame instanceof TextWebSocketFrame textWebSocketFrame) {
+            String request = textWebSocketFrame.text();
             log.info("收到客户端消息:{}",channel.id().hashCode() + "->" + request);
             MessageEvent messageEvent = new MessageEvent();
             messageEvent.setPlayerId(1);
@@ -158,24 +158,22 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
                 }
                 return;
             }
-            TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(request.toUpperCase(Locale.US));
-            String text = textWebSocketFrame.text();
+            TextWebSocketFrame socketFrame = new TextWebSocketFrame(request.toUpperCase(Locale.US));
+            String text = socketFrame.text();
             long l = System.currentTimeMillis();
             ctx.channel().writeAndFlush(new TextWebSocketFrame(String.valueOf(l)));
         } else if (frame instanceof PingWebSocketFrame) {
             ctx.channel().writeAndFlush(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof PongWebSocketFrame) {
             // 忽略客户端Pong
-        } else if (frame instanceof BinaryWebSocketFrame) {
+        } else if (frame instanceof BinaryWebSocketFrame binaryWebSocketFrame) {
             ISession session = sessionManager.getSessionByChannel(channel);
             if(session == null || !session.isVerified()){
                 log.error("session not found or not verified, channel: {}", channel);
                 return;
             }
-            int size = frame.content().readableBytes();
-            byte[] bytes = new byte[size];
-            frame.content().getBytes(0, bytes);
-            OuterMessage.DataPackage outerMessage = OuterMessage.DataPackage.parseFrom(bytes);
+            byte[] content = binaryWebSocketFrame.content().array();
+            OuterMessage.DataPackage outerMessage = OuterMessage.DataPackage.parseFrom(content);
             int mainType = outerMessage.getMainType();
             int subType = outerMessage.getSubType();
             MessageEvent messageEvent = new MessageEvent();

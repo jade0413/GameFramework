@@ -1,7 +1,7 @@
 package com.yp.gameframwrok.web.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yp.gameframwrok.engine.core.ServiceException;
+import com.yp.gameframwrok.exception.ServiceException;
 import com.yp.gameframwrok.web.entity.Account;
 import com.yp.gameframwrok.web.model.dto.LoginDTO;
 import com.yp.gameframwrok.web.model.dto.RegisterDTO;

@@ -4,8 +4,8 @@ import com.google.protobuf.ByteString;
 import com.yp.gameframwrok.engine.core.UserCacheManger;
 import com.yp.gameframwrok.engine.message.IMessageHandler;
 import com.yp.gameframwrok.game.annotation.GameHandler;
-import com.yp.gameframwrok.game.enums.EGameAction;
-import com.yp.gameframwrok.game.enums.EGameType;
+import com.yp.gameframwrok.enums.ESubType;
+import com.yp.gameframwrok.enums.EMainType;
 import com.yp.gameframwrok.model.cache.UserCache;
 
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@GameHandler(value = EGameType.ZJH, action = EGameAction.JOIN_ROOM)
+@GameHandler(value = EMainType.ZJH, action = ESubType.JOIN_ROOM)
 public class JoinHandler implements IMessageHandler {
 
 

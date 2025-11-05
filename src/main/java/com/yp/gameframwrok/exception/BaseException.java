@@ -1,11 +1,11 @@
-package com.yp.gameframwrok.engine.core;
+package com.yp.gameframwrok.exception;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  *
- * @author ruoyi
+ * @author yyp
  */
 public class BaseException extends RuntimeException {
     private static final long serialVersionUID = 1L;

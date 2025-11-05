@@ -1,4 +1,4 @@
-package com.yp.gameframwrok.engine.core;
+package com.yp.gameframwrok.exception;
 
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -6,21 +6,13 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import com.yp.gameframwrok.web.model.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.validation.BindException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.multipart.MultipartException;
 
 /**
  * 全局异常处理器
  *
- * @author ruoyi
+ * @author yyp
  */
 @Slf4j
 @RestControllerAdvice

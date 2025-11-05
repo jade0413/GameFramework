@@ -1,10 +1,10 @@
-package com.yp.gameframwrok.engine.core;
+package com.yp.gameframwrok.exception;
 
 
 /**
  * 业务异常
  *
- * @author ruoyi
+ * @author yyp
  */
 public final class ServiceException extends BaseException {
     private static final long serialVersionUID = 1L;

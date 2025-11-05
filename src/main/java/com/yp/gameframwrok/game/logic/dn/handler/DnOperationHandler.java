@@ -3,14 +3,14 @@ package com.yp.gameframwrok.game.logic.dn.handler;
 import com.google.protobuf.ByteString;
 import com.yp.gameframwrok.engine.message.IMessageHandler;
 import com.yp.gameframwrok.game.annotation.GameHandler;
-import com.yp.gameframwrok.game.enums.EGameAction;
-import com.yp.gameframwrok.game.enums.EGameType;
+import com.yp.gameframwrok.enums.ESubType;
+import com.yp.gameframwrok.enums.EMainType;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@GameHandler(value = EGameType.DN, action = EGameAction.OPERATION)
+@GameHandler(value = EMainType.DN, action = ESubType.OPERATION)
 public class DnOperationHandler implements IMessageHandler {
 
     @Override

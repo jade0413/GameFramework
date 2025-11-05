@@ -124,7 +124,7 @@ public class NettyConnectionTester {
             connections.add(channel);
             connectedCount.incrementAndGet();
 
-            log.debug("连接 {} 建立成功", connectionId);
+            log.info("连接 {} 建立成功", connectionId);
 
             // 发送认证或心跳消息
             String authMsg = String.format("{\"type\":\"auth\",\"clientId\":%d,\"timestamp\":%d}",

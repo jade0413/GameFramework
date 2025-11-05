@@ -1,7 +1,7 @@
 package com.yp.gameframwrok.web.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yp.gameframwrok.engine.core.ServiceException;
+import com.yp.gameframwrok.exception.ServiceException;
 import com.yp.gameframwrok.engine.core.UserCacheManger;
 import com.yp.gameframwrok.model.cache.UserCache;
 import com.yp.gameframwrok.web.entity.Account;
