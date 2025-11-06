@@ -28,7 +28,7 @@ public class HeartBeatServerHandler extends ChannelInboundHandlerAdapter {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.ALL_IDLE) {
                 log.info("{} 读写空闲，关闭连接", ctx.channel().remoteAddress());
-                sessionManager.removeSession(ctx.channel().id().hashCode());
+                sessionManager.removeSession(ctx.channel());
             }
         } else {
             super.userEventTriggered(ctx, evt);

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,39 +47,54 @@ public class DefaultSessionManager implements ISessionManager {
 
     public void init() {
         scheduler.scheduleAtFixedRate(() -> {
-            if (!localSessions.isEmpty()) {
-                localSessions.forEach(session -> {
-                    if (session.isTimeOut()) {
-                        log.info("会话心跳超时, 会话ID: {}", session.getSessionId());
-                        removeSession(session);
+            try {
+                log.info("会话心跳检查, 总会话数量: {}, 用户会话数量: {}, 连接会话数量: {}", localSessions.size(), localSessionsById.size(), localSessionsByConnection.size());
+                List<ISession> sessionsCopy;
+                synchronized (this.localSessions) {
+                    // 创建localSessions的一个快照，避免遍历时并发修改异常
+                    sessionsCopy = new ArrayList<>(localSessions);
+                }
+                if (!sessionsCopy.isEmpty()) {
+                    for (ISession session : sessionsCopy) {
+                        log.info("会话心跳检查, 会话ID: {}", session);
+                        if (session.isTimeOut()) {
+                            log.info("会话心跳超时, 会话ID: {}", session.getSessionId());
+                            this.removeSession(session);
+                        }
                     }
-                });
-            }
-            if (!detachedExpireAt.isEmpty()) {
-                reconnectTokenManager.clearExpiredTokens();
-                long now = System.currentTimeMillis();
-                detachedExpireAt.entrySet().removeIf(e -> {
-                    int sid = e.getKey();
-                    long expireAt = e.getValue();
-                    if (expireAt <= now) {
-                        this.removeSession(sid);
-                        log.info("重连窗口过期，清理会话: {}", sid);
-                        return true;
-                    }
-                    return false;
-                });
+                }
+                if (!detachedExpireAt.isEmpty()) {
+                    reconnectTokenManager.clearExpiredTokens();
+                    long now = System.currentTimeMillis();
+                    detachedExpireAt.entrySet().removeIf(e -> {
+                        int sid = e.getKey();
+                        long expireAt = e.getValue();
+                        if (expireAt <= now) {
+                            this.removeSession(sid);
+                            log.info("重连窗口过期，清理会话: {}", sid);
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            } catch (Exception e) {
+                log.error("会话心跳检查异常", e);
             }
         }, 0, 10000, TimeUnit.MILLISECONDS);
     }
 
-
+    public void updateSessionAlive(Channel channel){
+        ISession session = getSessionByChannel(channel);
+        if (session != null) {
+            session.updateAliveTime(System.currentTimeMillis());
+        }
+    }
 
     @Override
     public void addSession(ISession session) {
         synchronized (this.localSessions) {
             this.localSessions.add(session);
         }
-        this.localSessionsById.put(session.getSessionId(), session);
         this.localSessionsByConnection.put(session.getChannel(), session);
         log.info("连接数量: {}, 用户会话数量: {}", localSessions.size(), localSessionsById.size());
     }
@@ -97,12 +113,14 @@ public class DefaultSessionManager implements ISessionManager {
         synchronized (this.localSessions) {
             this.localSessions.remove(session);
         }
-        this.localSessionsById.remove(session.getSessionId());
+        if(session.getUserId() != null){
+            localSessionsById.remove(session.getUserId());
+        }
         this.localSessionsByConnection.remove(session.getChannel());
         if(isClose){
             session.close();
         }
-        log.info("移除会话, 会话ID: {}, 连接数量: {}, 用户会话数量: {}", session.getSessionId(), localSessions.size(), localSessionsById.size());
+        log.info("移除会话, 会话ID: {}, 连接数量: {}, 用户会话数量: {}, 连接会话数量: {}", session.getSessionId(), localSessions.size(), localSessionsById.size(),localSessionsByConnection.size());
     }
 
     @Override
@@ -120,8 +138,8 @@ public class DefaultSessionManager implements ISessionManager {
         return localSessionsByConnection.get(channel);
     }
 
-    public void removeSession(int sessionId) {
-        ISession session = localSessionsById.get(sessionId);
+    public void removeSession(int userId) {
+        ISession session = localSessionsById.get(userId);
         if (session != null) {
             removeSession(session);
         }
@@ -147,23 +165,22 @@ public class DefaultSessionManager implements ISessionManager {
                 return;
             }
             ss.markDetached();
-            detachedExpireAt.put(ss.getSessionId(), System.currentTimeMillis() + reconnectWindowMillis.get());
-            log.info("会话脱离，等待重连: {}", ss.getSessionId());
+            detachedExpireAt.put(ss.getUserId(), System.currentTimeMillis() + reconnectWindowMillis.get());
+            log.info("会话脱离，等待重连: {}", ss.getUserId());
         }
     }
 
     @Override
-    public ISession resumeSession(int previousSessionId, Channel newChannel) {
-        ISession s = localSessionsById.get(previousSessionId);
-        if (!(s instanceof Session)) {
+    public ISession resumeSession(int previousUserId, Channel newChannel) {
+        ISession s = localSessionsById.get(previousUserId);
+        if (!(s instanceof Session ss)) {
             return null;
         }
-        Session ss = (Session) s;
         if (!ss.isDetached()) {
             return null;
         }
         // 关闭重连窗口
-        closeDetachedSession(previousSessionId);
+        closeDetachedSession(previousUserId);
         // 清空新会话的session,因为将新的channel绑定到了老的会话
         this.clearSession(newChannel);
         // 重新设置会话ID
@@ -171,7 +188,7 @@ public class DefaultSessionManager implements ISessionManager {
         ss.clearDetached();
         // 再移除旧会话
         this.localSessionsByConnection.put(newChannel, ss);
-        log.info("会话重连成功: {} -> {}", previousSessionId, newChannel.remoteAddress());
+        log.info("会话重连成功: {} -> {}", previousUserId, newChannel.remoteAddress());
         log.info("新的会话ID: {}", ss.getSessionId());
         return ss;
     }
@@ -180,4 +197,21 @@ public class DefaultSessionManager implements ISessionManager {
         this.detachedExpireAt.remove(sessionId);
     }
 
+    public synchronized void mapUserIdSession(int userId, Channel channel){
+        ISession session = getSessionByChannel(channel);
+        if (session != null) {
+            // 如果已经校验过 并且是同一个channel，直接返回
+            if(session.isVerified() && session.getUserId() == userId){
+                return;
+            }
+            session.setVerified(userId);
+            ISession iSession = localSessionsById.get(userId);
+            if(iSession != null){
+                log.info("用户 {} 已登录，重新绑定会话, 会话ID: {}", userId, iSession.getSessionId());
+                removeSession(iSession);
+            }
+            localSessionsById.put(userId, session);
+            log.info("用户 {} 登录成功, 用户会话数量: {}", userId, localSessionsById.size());
+        }
+    }
 }

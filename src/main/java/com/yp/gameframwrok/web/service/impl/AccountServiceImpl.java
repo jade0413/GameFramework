@@ -1,8 +1,8 @@
 package com.yp.gameframwrok.web.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yp.gameframwrok.exception.ServiceException;
 import com.yp.gameframwrok.engine.core.UserCacheManger;
+import com.yp.gameframwrok.exception.ServiceException;
 import com.yp.gameframwrok.model.cache.UserCache;
 import com.yp.gameframwrok.web.entity.Account;
 import com.yp.gameframwrok.web.mapper.AccountMapper;
@@ -39,6 +39,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         userCache.setNickname(account.getNickname());
         userCache.setState(account.getState());
         userCache.setToken(token);
+        // 这里如果用redis缓存的换 可以件Web端和游戏端分开部署 游戏端从redis缓存中获取用户信息
         userCacheManger.putUser(account.getUserId(), userCache);
         LoginResultVO loginResultVO = new LoginResultVO();
         loginResultVO.setUserId(account.getUserId());
@@ -63,7 +64,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     public String getToken(Integer userId) {
         // 可以使用jwt生成token 或者自定义
-        return userId + "_" + System.currentTimeMillis();
+        return userId + "-" + "test_token";
     }
 
 }

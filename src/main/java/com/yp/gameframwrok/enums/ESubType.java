@@ -7,16 +7,12 @@ import lombok.Getter;
  */
 public enum ESubType {
 
-    VERIFY(1000,"校验"),
-
-     /**
-      * 操作
-      */
-     OPERATION(1001, "操作"),
-     /**
-      * 加入房间
-      */
-     JOIN_ROOM(1002, "加入房间"),
+     VERIFY(1000,"校验"),
+     JOIN_ROOM(1001, "加入房间"),
+     OPERATION(1002, "游戏操作"),
+     ROOM(1003, "房间操作,(退出 换房间)"),
+     OFFLINE(1004, "离线操作"),
+     RECONNECT(1005, "重连操作"),
      ;
 
      @Getter

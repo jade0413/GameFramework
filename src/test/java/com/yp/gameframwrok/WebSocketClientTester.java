@@ -136,11 +136,10 @@ public class WebSocketClientTester {
             log.info("连接 {} WebSocket 握手成功", connectionId);
 
             // 握手成功后发送测试消息
-            String authMsg = String.format("{\"type\":\"auth\",\"clientId\":%d,\"timestamp\":%d}",
-                    connectionId, System.currentTimeMillis());
+            String authMsg = "1-test_token";
             channel.writeAndFlush(new TextWebSocketFrame(authMsg));
             log.info("连接 {} 发送认证消息: {}", connectionId, authMsg);
-
+//            Thread.sleep(100000);
         } catch (Exception e) {
             failedCount.incrementAndGet();
             log.error("连接 {} 失败: {}", connectionId, e.getMessage());

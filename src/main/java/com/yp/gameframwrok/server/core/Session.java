@@ -5,8 +5,8 @@ import io.netty.channel.Channel;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Data
+@Log4j2
 public class Session implements ISession {
 
 
@@ -36,7 +36,7 @@ public class Session implements ISession {
         this.sessionId = channel.id().hashCode();
         this.connection = channel;
         this.aliveTime = System.currentTimeMillis();
-        this.expireTime = 0;
+        this.expireTime = 600_000;
     }
 
     @Override
@@ -62,6 +62,16 @@ public class Session implements ISession {
 
     public boolean isVerified() {
         return this.userId != null && this.userId > 0;
+    }
+
+    @Override
+    public void setVerified(int userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public void updateAliveTime(long aliveTime) {
+        this.aliveTime = aliveTime;
     }
 
 

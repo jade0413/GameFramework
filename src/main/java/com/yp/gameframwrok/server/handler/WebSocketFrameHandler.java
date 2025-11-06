@@ -1,14 +1,12 @@
 package com.yp.gameframwrok.server.handler;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.yp.gameframwrok.engine.message.MessageEvent;
 import com.yp.gameframwrok.engine.message.MessageEventTask;
 import com.yp.gameframwrok.model.message.OuterMessage;
 import com.yp.gameframwrok.server.manager.ISession;
-import com.yp.gameframwrok.server.manager.SocketAcceptor;
-import com.yp.gameframwrok.server.manager.ReconnectTokenManager;
 import com.yp.gameframwrok.server.manager.ISessionManager;
+import com.yp.gameframwrok.server.manager.SocketAcceptor;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
@@ -16,16 +14,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import java.net.SocketException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.net.SocketException;
-import java.util.Locale;
 
 /**
  * Echoes uppercase content of text frames.
@@ -37,8 +33,7 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
 
     @Autowired
     SocketAcceptor socketAcceptor;
-    @Autowired
-    ReconnectTokenManager reconnectTokenManager;
+
     @Autowired
     ISessionManager sessionManager;
 
@@ -48,12 +43,6 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("创建链接-----: " + ctx.channel().remoteAddress());
         socketAcceptor.registerChannel(ctx.channel());
-        // 下发一次性重连令牌（窗口期内有效）
-//        int sid = ctx.channel().id().hashCode();
-//        String token = reconnectTokenManager.issue(sid);
-//        ctx.writeAndFlush(new TextWebSocketFrame("TOKEN:" + token));
-//        log.info("RESUME:{}", token);
-//        log.info("会话ID:{}", sid);
         super.channelActive(ctx);
     }
 
@@ -141,28 +130,14 @@ public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocket
         if (frame instanceof TextWebSocketFrame textWebSocketFrame) {
             String request = textWebSocketFrame.text();
             log.info("收到客户端消息:{}",channel.id().hashCode() + "->" + request);
-            MessageEvent messageEvent = new MessageEvent();
-            messageEvent.setPlayerId(1);
-            messageEvent.setData(ByteString.copyFromUtf8(request));
-            messageEvent.setMainType(1);
-            messageEvent.setSubType(1);
-            // 消息直接交给Disruptor处理
-            messageEventTask.messageEventProducer().onData(messageEvent);
+            // 如果为重连请求
             if (request.startsWith("RESUME:")) {
                 String token = request.substring("RESUME:".length());
-                Integer oldSid = reconnectTokenManager.consume(token);
-                if (oldSid != null && sessionManager.resumeSession(oldSid, channel) != null) {
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame("RESUME_OK"));
-                } else {
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame("RESUME_FAIL"));
-                }
-                return;
+                socketAcceptor.reconnection(token, channel);
             }
-            TextWebSocketFrame socketFrame = new TextWebSocketFrame(request.toUpperCase(Locale.US));
-            String text = socketFrame.text();
-            long l = System.currentTimeMillis();
-            ctx.channel().writeAndFlush(new TextWebSocketFrame(String.valueOf(l)));
+            socketAcceptor.checkVerify(request, channel);
         } else if (frame instanceof PingWebSocketFrame) {
+            sessionManager.updateSessionAlive(channel);
             ctx.channel().writeAndFlush(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof PongWebSocketFrame) {
             // 忽略客户端Pong

@@ -23,4 +23,8 @@ public interface ISession {
     Integer getUserId();
 
     boolean isVerified();
+
+    void setVerified(int userId);
+
+    void updateAliveTime(long aliveTime);
 }

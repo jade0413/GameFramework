@@ -14,11 +14,11 @@ public class ReconnectTokenManager {
     private final Map<String, Entry> tokenToSession = new ConcurrentHashMap<>();
     private volatile long ttlMillis = 30_000;
 
-    public String issue(int sessionId) {
+    public String issue(int userId) {
         byte[] bytes = new byte[24];
         RANDOM.nextBytes(bytes);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-        tokenToSession.put(token, new Entry(sessionId, System.currentTimeMillis() + ttlMillis));
+        tokenToSession.put(token, new Entry(userId, System.currentTimeMillis() + ttlMillis));
         return token;
     }
 

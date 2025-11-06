@@ -7,7 +7,7 @@ import lombok.Getter;
  */
 public enum EMainType {
 
-    BASE(1000,"基础校验"),
+    BASE(1000,"基础服务"),
     ZJH(1001, "扎金花"),
     DN(1002,"斗牛"),
     ;

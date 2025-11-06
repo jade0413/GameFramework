@@ -19,10 +19,12 @@ public interface ISessionManager {
 
 	void removeSession(ISession session);
 
+	void updateSessionAlive(Channel channel);
+
 	/**
 	 * 根据会话ID移除会话
 	 */
-	void removeSession(int sessionId) throws IOException;
+	void removeSession(int userId) throws IOException;
 
 	void removeSession(Channel channel);
 
@@ -39,5 +41,10 @@ public interface ISessionManager {
 	/**
 	 * 通过旧会话ID恢复到新通道。
 	 */
-	ISession resumeSession(int previousSessionId, Channel newChannel);
+	ISession resumeSession(int previousUserId, Channel newChannel);
+
+	/**
+	 * 映射用户ID到会话
+	 */
+	void mapUserIdSession(int userId, Channel channel);
 }
